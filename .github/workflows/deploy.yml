@@ -1,0 +1,29 @@
+name: Deploy to Server
+
+# 当 main 分支有 push 操作时触发
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 配置 SSH 并执行远程脚本
+      - name: Run remote deployment script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          # 因为你的私钥可能有 Passphrase，如果没有则删除下面这行
+          # passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd ~/dockerls/my-website
+            ./deploy.sh
